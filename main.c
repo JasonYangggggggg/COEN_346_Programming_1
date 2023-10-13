@@ -4,8 +4,6 @@
 #include <unistd.h>
 #define MIN_PID 300
 #define MAX_PID 5000
-
-#include <stdio.h>
 #include <stdlib.h>
 
 int process_size = 0;
