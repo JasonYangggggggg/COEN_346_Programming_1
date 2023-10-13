@@ -1,9 +1,6 @@
 #include <stdio.h>
-// #include <unistd.h>
 #include <fcntl.h>
-// #include <sys/wait.h>
 #include <sys/types.h>
-// #include <sys/errno.h>
 #include <unistd.h>
 #define MIN_PID 300
 #define MAX_PID 5000
