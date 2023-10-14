@@ -1,80 +1,174 @@
 #include <stdio.h>
-#include <unistd.h>
 #include <fcntl.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/wait.h>
 #include <sys/types.h>
-#include <sys/errno.h>
-
+#include <unistd.h>
 #define MIN_PID 300
 #define MAX_PID 5000
-#define MAXC 1024
+#include <stdlib.h>
 
-FILE *input;
-
-int main(int argc, char **argv) {
-    char buffer[MAXC]; // buffer to read lines
-
-    // I'm on Mac, so you may need to modify this line for windows
-    input = argc > 1 ? fopen(argv[1], "r") : stdin;
-
-    // Validate file open for reading
-    if (!input) {
-        perror("ERROR: Failed to open file");
+int process_size = 0;
+struct process
+{
+    char name;
+    int priority;
+    int CPU_Burst;
+    int arrive_time;
+    int n;
+    int currently_inuse;
+};
+struct process *container;
+int main()
+{
+    FILE *file = fopen("input.txt", "r");
+    if (file == NULL)
+    {
+        perror("Error opening the file");
         return 1;
     }
+    char line[150];
+    char *lines[30];
+    int line_count = 0;
+    while (fgets(line, sizeof(line), file) != NULL)
+    {
+        size_t length = strlen(line);
+        if (line[length - 1] == '\n')
+        {
+            line[length - 1] = '\0';
+        }
 
-    int lines = 0; // init number of lines
-    int c;
-
-    while((c = fgetc(input)) != EOF) { // counts # of line breaks in file
-        if ( c == '\n')
-            ++ lines; // increment counter for lines if character encountered = line break
+        lines[line_count] = strdup(line);
+        line_count++;
     }
 
-    // reset pointer to SOF
-    rewind(input);
+    fclose(file);
 
-    // init list of size lines
-    int *p_list = malloc(lines * sizeof(int));
-
-    while (fgets(buffer, MAXC, input)) {
-        size_t len;
-        buffer[(len = strcspn(buffer, "\n"))] = 0; // remove "\n" from line
-
-    }
-    printf("Hello, World!\n");
+    process_size = line_count;
+    container = malloc(process_size * sizeof(struct process));
+    // call the function to create the map
+    allocate_map();
+    int testing = allocate_pid();
+    printf("%d", testing);
     return 0;
 }
 
-// Creates and initializes a data structure for representing pids
-//      -> Returns 1 if successful -1 if unsuccessful
-//      -> Select data structure
-int allocate_map(void) {
-    // read input.txt & split it into n number of processes.
-    //      -> Split each line into 5 diff fields
-    //      -> Check last field for presence of children
-    // how do i decide which algo to select??
-    // -> Check it for the name too to know the orde of children.
-}
+int allocate_map(void)
+{
 
-// Allocates and returns a pid
-//      -> Returns -1 if unable to allocate a process (all currently in use)
-int allocate_pid(void) {
-    pid_t pid;
+    printf("%d\n", process_size);
+    struct process object[process_size];
+    FILE *file = fopen("input.txt", "r");
+    if (file == NULL)
+    {
+        perror("Error opening the file");
+        return 1;
+    }
+    char line[150];
+    char *lines[30];
+    int line_count = 0;
+    while (fgets(line, sizeof(line), file) != NULL)
+    {
+        size_t length = strlen(line);
+        if (line[length - 1] == '\n')
+        {
+            line[length - 1] = '\0';
+        }
 
-    pid = fork();
+        lines[line_count] = strdup(line);
+        line_count++;
+    }
 
-    if (pid < 0) {
-        printf("Error initializing pid");
-        return -1;
-    } else {
-        return pid;
+    fclose(file);
+    int index = 0;
+    for (int i = 0; i < line_count; i++)
+    {
+        char *token = strtok(lines[i], ",");
+        while (token != NULL)
+        {
+            // this is where you can store each of these tokens in a line to the design parameters
+            printf("Token: %s\n", token);
+            if (index == 0)
+            {
+                object[i].name = token[0];
+            }
+            else if (index == 1)
+            {
+                object[i].priority = atoi(token);
+            }
+            else if (index == 2)
+            {
+                object[i].CPU_Burst = atoi(token);
+            }
+            else if (index == 3)
+            {
+                object[i].arrive_time = atoi(token);
+            }
+            else if (index == 4)
+            {
+                object[i].n = atoi(token);
+            }
+
+            // get next token
+            token = strtok(NULL, ",");
+            index++;
+        }
+
+        index = 0;
+        printf("**********************");
+        putchar('\n');
+    }
+    for (int i = 0; i < process_size; i++)
+    {
+        container[i] = object[i];
+    }
+    // testing if such items store in the object
+    for (int i = 0; i < line_count; i++)
+    {
+        printf("%d\n", object[i].priority);
+        printf("**********************");
+        putchar('\n');
     }
 }
 
-// Releases a pid
-void release_pid(int pid) {
+// not quite sure if this is the right way
+int allocate_pid(void)
+{
+    static int current_pid = MIN_PID;
 
+    // check if all the pid is in use (more than 5000)
+    if (current_pid > MAX_PID)
+    {
+        return -1;
+    }
+
+    for (int i = 0; i < process_size; i++)
+    {
+        // object can be global value
+        if (container[i].n == current_pid)
+        {
+            current_pid++;
+            return allocate_pid();
+        }
+    }
+    for (int i = 0; i < process_size; i++)
+    {
+        if (container[i].n == current_pid)
+        {
+            container[i].currently_inuse = 1;
+        }
+    }
+
+    return current_pid++;
+}
+
+// // Releases a pid
+void release_pid(int pid)
+{
+    for (int i = 0; i < process_size; i++)
+    {
+        if (container[i].n == pid)
+        {
+            container[i].currently_inuse = 0;
+            break;
+        }
+    }
 }
