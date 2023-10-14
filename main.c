@@ -2,9 +2,13 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+
 #define MIN_PID 300
 #define MAX_PID 5000
-#include <stdlib.h>
+
+FILE *file;
 
 int process_size = 0;
 struct process
@@ -17,47 +21,15 @@ struct process
     int currently_inuse;
 };
 struct process *container;
-int main()
-{
-    FILE *file = fopen("input.txt", "r");
-    if (file == NULL)
-    {
-        perror("Error opening the file");
-        return 1;
-    }
-    char line[150];
-    char *lines[30];
-    int line_count = 0;
-    while (fgets(line, sizeof(line), file) != NULL)
-    {
-        size_t length = strlen(line);
-        if (line[length - 1] == '\n')
-        {
-            line[length - 1] = '\0';
-        }
 
-        lines[line_count] = strdup(line);
-        line_count++;
-    }
-
-    fclose(file);
-
-    process_size = line_count;
-    container = malloc(process_size * sizeof(struct process));
-    // call the function to create the map
-    allocate_map();
-    int testing = allocate_pid();
-    printf("%d", testing);
-    return 0;
-}
 
 int allocate_map(void)
 {
-
     printf("%d\n", process_size);
     struct process object[process_size];
-    FILE *file = fopen("input.txt", "r");
-    if (file == NULL)
+
+    file = fopen("../input.txt", "r");
+    if (!file)
     {
         perror("Error opening the file");
         return 1;
@@ -78,6 +50,7 @@ int allocate_map(void)
     }
 
     fclose(file);
+
     int index = 0;
     for (int i = 0; i < line_count; i++)
     {
@@ -127,6 +100,8 @@ int allocate_map(void)
         printf("**********************");
         putchar('\n');
     }
+    printf("done");
+    return 0;
 }
 
 // not quite sure if this is the right way
@@ -171,4 +146,44 @@ void release_pid(int pid)
             break;
         }
     }
+}
+
+
+int main()
+{
+    /*FILE *file = fopen("input.txt", "r");
+    if (file == NULL)
+    {
+        perror("Error opening the file");
+        return 1;
+    }
+    char line[150];
+    char *lines[30];
+    int line_count = 0;
+    while (fgets(line, sizeof(line), file) != NULL)
+    {
+        size_t length = strlen(line);
+        if (line[length - 1] == '\n')
+        {
+            line[length - 1] = '\0';
+        }
+
+        lines[line_count] = strdup(line);
+        line_count++;
+    }
+
+    fclose(file);
+
+    process_size = line_count;
+    container = malloc(process_size * sizeof(struct process));*/
+    // call the function to create the map
+    int map = allocate_map();
+    if (map == 0) {
+        int testing = allocate_pid();
+        printf("%d", testing);
+    } else {
+        printf("error");
+        return 1;
+    }
+    return 0;
 }
