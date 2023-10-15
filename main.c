@@ -13,11 +13,13 @@
 
 struct process
 {
+    int pid;
     char name;
     int priority;
     int CPU_Burst;
     int arrive_time;
     int n;
+    char status;
 };
 
 
@@ -141,6 +143,7 @@ void to_ready_q(int pid) {
     }
 }
 
+
 int allocate_map(void) {
     pid_bitmap = malloc((MAX_PID - MIN_PID + 1) * sizeof (int));
     if (pid_bitmap) {
@@ -187,9 +190,6 @@ int allocate_pid(void)
     last = next;
     int pid = last + 300;
 
-    // send to ready queue
-    to_ready_q(pid);
-
     return pid;
 }
 
@@ -199,7 +199,20 @@ void release_pid(int pid)
     pid_bitmap[pid-300] = 0;
 }
 
+void fcfs_sched(struct process p) {
+    // if p.n > 0
+    // every time the counter ++, then check if child arrives.
+    //      -> if it arrives, add child to ready queue
+    //      -> T1 goes into wait queue when ALL of its children have arrived
+}
 
+void sjf_sched(struct process p) {
+
+}
+
+void psjf_sched(struct process p) {
+
+}
 
 void scheduler(char **algorithm){
     clock_t start_t, end_t;
@@ -208,7 +221,12 @@ void scheduler(char **algorithm){
     
     // FCFS
     if (strcmp(algorithm, "fcfs")) {
-        // at t = 0, start T1
+        // at each time, check if a process is supposed to arrive
+        for (int i = 0; i < sizeof (p_list); i++) {
+            if (p_list[i].arrive_time == total_t) {
+                allocate_pid();
+            }
+        }
     } else if (strcmp(algorithm, "sjf")) {
 
     } else if (strcmp(algorithm, "psjf")) {
