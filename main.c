@@ -4,12 +4,17 @@
 #include <unistd.h>
 #define MIN_PID 300
 #define MAX_PID 5000
+#include <time.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 int process_size = 0;
+int stop_time = 0;
+int timer_static = 0;
+int max_time = 0;
 struct process
 {
-    char name;
+    char name[10];
     int priority;
     int CPU_Burst;
     int arrive_time;
@@ -48,6 +53,7 @@ int main()
     allocate_map();
     int testing = allocate_pid();
     printf("%d", testing);
+    fcfs();
     return 0;
 }
 
@@ -88,7 +94,7 @@ int allocate_map(void)
             printf("Token: %s\n", token);
             if (index == 0)
             {
-                object[i].name = token[0];
+                strcpy(object[i].name, token);
             }
             else if (index == 1)
             {
@@ -171,4 +177,57 @@ void release_pid(int pid)
             break;
         }
     }
+}
+// timer -> working on it
+void clocktimer()
+{
+    while (timer_static < max_time)
+    {
+        printf("%d", timer_static);
+        fflush(stdout);
+        sleep(1);
+        timer_static += 1;
+        printf("\r");
+    }
+}
+
+void fcfs(void)
+{
+    putchar('\n');
+    struct process readyq[process_size];
+    for (int i = 0; i < process_size; i++)
+    {
+        strcpy(readyq[i].name, container[i].name);
+        readyq[i].priority = container[i].priority;
+        readyq[i].CPU_Burst = container[i].CPU_Burst;
+        readyq[i].arrive_time = container[i].arrive_time;
+        readyq[i].n = container[i].n;
+        readyq[i].currently_inuse = container[i].currently_inuse;
+    }
+    // sort base on arrive time. (bubble sort)
+    for (int i = 0; i < process_size - 1; i++)
+    {
+        for (int j = 0; j < process_size - i - 1; j++)
+        {
+            if (readyq[j].arrive_time > readyq[j + 1].arrive_time)
+            {
+                struct process temp = readyq[j];
+                readyq[j] = readyq[j + 1];
+                readyq[j + 1] = temp;
+            }
+        }
+    }
+
+    // first intiation
+    max_time = readyq[0].CPU_Burst;
+    printf("The process that is implemented is: %s\n", readyq[0].name);
+    for (int i = 1; i < process_size; i++)
+    {
+        clocktimer();
+        printf("The process that is implemented after is: %s\n", readyq[i].name);
+        max_time = max_time + readyq[i].CPU_Burst;
+    }
+    // set this back to 0
+    max_time = 0;
+    timer_static = 0;
 }
