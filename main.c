@@ -22,22 +22,58 @@ struct process
     char status;
 };
 
-
-
 int *pid_bitmap;
 
-int process_count;
 int last;
 
-struct process *ready_q;
+struct process *rdy_q;
 struct process *wait_q;
 struct process *p_list;
 
 int *pid_map;
 
-char select_algo(struct process *process_list) {
+// QUEUE DATA STRUCTURE
+typedef struct node {
+    struct process p;
+    struct node *next;
+} node_t;
 
+void enqueue(node_t **head, struct process p) {
+    node_t *new_node = malloc(sizeof (node_t));
+    if (!new_node) return;
+
+    new_node->p = p;
+    new_node->next = *head;
+
+    *head = new_node;
 }
+
+int dequeue(node_t **head) {
+    node_t *current, *prev = NULL;
+    int retval = -1;
+
+    if (*head == NULL) return -1;
+
+    current = *head;
+    while (current->next != NULL) {
+        prev = current;
+        current = current->next;
+    }
+
+    retval = current->p;
+    free(current);
+
+    if (prev)
+        prev->next = NULL;
+    else
+        *head = NULL;
+
+    return retval;
+}
+
+/*char select_algo(struct process *process_list) {
+
+}*/
 
 int read_file(void)
 {
@@ -125,24 +161,14 @@ int read_file(void)
         printf("**********************");
         putchar('\n');
     }
+    // init ready queue & wait list
+    rdy_q = malloc(line_count*sizeof(struct process));
+    wait_q = malloc(line_count*sizeof(struct process));
 
     // Compare algorithms and select chosen one
-    printf("%d\n", line_count);
-    return line_count;
+    printf("%d\n", (int) line_count);
+    return (int) line_count;
 }
-
-void to_ready_q(int pid) {
-    printf("Send pid %d to ready queue", pid);
-    if (pid_map) {
-        // find first empty spot
-        for (int i = 0; i < process_count; i++) {
-            if (!pid_map[i]) {
-                pid_map[i] = pid;
-            }
-        }
-    }
-}
-
 
 int allocate_map(void) {
     pid_bitmap = malloc((MAX_PID - MIN_PID + 1) * sizeof (int));
@@ -154,10 +180,6 @@ int allocate_map(void) {
     } else {
         return -1;
     }
-
-    // init pid map
-    pid_map = malloc(sizeof(int[process_count][2]));
-
     return 1;
 }
 
@@ -193,50 +215,117 @@ int allocate_pid(void)
     return pid;
 }
 
- // Releases a pid
+// Releases a pid
 void release_pid(int pid)
 {
     pid_bitmap[pid-300] = 0;
 }
 
-void fcfs_sched(struct process p) {
+void to_ready_q(struct process p) {
+    // set pid of process that was just allocated
+    p.pid = allocate_pid();
+
+    // add process to first empty slot in ready queue
+    for (int i = 0; i < sizeof (&rdy_q); i++) {
+        if (!rdy_q[i].pid) {
+            rdy_q[i] = p; // set pid
+        }
+    }
+
+    printf("Process %d [pid = %d] with priority %d, CPU burst %d and %d children added to ready queue", p.name, p.pid, p.priority, p.CPU_Burst, p.n);
+}
+
+void fcfs_sched(struct process *process_list) {
     // if p.n > 0
     // every time the counter ++, then check if child arrives.
     //      -> if it arrives, add child to ready queue
     //      -> T1 goes into wait queue when ALL of its children have arrived
 }
 
-void sjf_sched(struct process p) {
+void rr_sched(int quantum, u_long total_time) {
+    /*
+     * At each time, looks in process list & checks if a process is arriving at current time. If there is, add p to ready queue
+     * Concurrently, time quantum are executing. At the end of a time quantum, check for next p in rdy queue.
+    */
+    unsigned long time = 0;
+    unsigned long tick = 1;
+    int quantum_t = 0;
 
-}
+    struct process p;
 
-void psjf_sched(struct process p) {
 
-}
-
-void scheduler(char **algorithm){
-    clock_t start_t, end_t;
-    double total_t;
-    int i;
-    
-    // FCFS
-    if (strcmp(algorithm, "fcfs")) {
-        // at each time, check if a process is supposed to arrive
-        for (int i = 0; i < sizeof (p_list); i++) {
-            if (p_list[i].arrive_time == total_t) {
-                allocate_pid();
+    while (time < total_time) {
+        // at each time, check if a process has arrived
+        for (int i = 0; i < sizeof(&p_list); i++) {
+            if (p_list[i].arrive_time == time) {
+                // allocate pid
+                to_ready_q(p_list[i]);
             }
         }
-    } else if (strcmp(algorithm, "sjf")) {
 
-    } else if (strcmp(algorithm, "psjf")) {
+        /*
+         * separate int to keep track of how many seconds it's been since the time quantum has started.
+         * if elapsed < quantum, then skip UNLESS the process is done executing.
+         * */
+        // if rdy_q is not empty AND we are at a time quantum UNLESS
+        if ((rdy_q != NULL) & (quantum_t % quantum == 0)) {
+            // grab first process in rdy queue for execution
+            p = rdy_q[0];
+            // remove p from the rdy queue
+            rdy_q[0].CPU_Burst -= quantum;
 
+            // if process is done executing its burst time, then set quantum_t to 0
+            if (rdy_q[0]){}
+        }
+
+        // increment time & quantum_t by 1
+        time += tick;
+        quantum_t += 1;
     }
 }
 
+void prr_sched(struct process *process_list, int quantum) {
 
-int main()
+}
+
+/*void scheduler(char *algorithm, int *quantum, u_long total_time){
+    unsigned long time = 0;
+    unsigned long tick = 1;
+
+
+    while (time < total_time) {
+        // at each time, check if a process has arrived
+        for (int i = 0; i < sizeof(&p_list); i++) {
+            if (p_list[i].arrive_time == time) {
+                // allocate pid
+                int pid = allocate_pid();
+                // add to ready queue
+                to_ready_q(pid);
+            }
+        }
+
+        // FCFS
+        if (strcmp(algorithm, "fcfs") != 0) {
+
+
+        } else if (strcmp(algorithm, "rr") != 0) {
+
+        } else if (strcmp(algorithm, "rr") != 0) {
+
+        }
+
+        // increment time by 1
+        time += tick;
+    }
+}*/
+
+
+int main(int argc, char *argv[])
 {
+    char* input_file = argv[1];
+    char* algorithm = argv[2];
+    int quantum = atoi(argv[3]);
+
     read_file();
     // program init
     allocate_map();
@@ -245,12 +334,18 @@ int main()
     printf("Time \t Running \t Waiting\n");
     /* */
 
-    /*if (process_size == 0) {
-        int testing = allocate_pid();
-        printf("%d", testing);
-    } else {
-        printf("error");
-        return 1;
-    }*/
+    // FCFS
+    if (strcmp(algorithm, "fcfs") != 0) {
+
+
+    }
+    // RR
+    else if (strcmp(algorithm, "rr") != 0) {
+
+    }
+    // Priority RR
+    else if (strcmp(algorithm, "prr") != 0) {
+
+    }
     return 0;
 }
