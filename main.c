@@ -1,9 +1,13 @@
 #include <stdio.h>
+// #include <unistd.h>
 #include <fcntl.h>
+// #include <sys/wait.h>
 #include <sys/types.h>
+// #include <sys/errno.h>
 #include <unistd.h>
 #define MIN_PID 300
 #define MAX_PID 5000
+#define MAX_QUEUE_SIZE 100
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,7 +57,8 @@ int main()
     allocate_map();
     int testing = allocate_pid();
     printf("%d", testing);
-    fcfs();
+    // fcfs();
+    roundRobin();
     return 0;
 }
 
@@ -230,4 +235,129 @@ void fcfs(void)
     // set this back to 0
     max_time = 0;
     timer_static = 0;
+}
+
+struct Queue
+{
+    struct process items[MAX_QUEUE_SIZE];
+    int front;
+    int rear;
+    int size;
+};
+
+void initializeQueue(struct Queue *queue)
+{
+    queue->front = 0;
+    queue->rear = -1;
+    queue->size = 0;
+}
+
+int isQueueEmpty(struct Queue *queue)
+{
+    return (queue->size == 0);
+}
+
+int isQueueFull(struct Queue *queue)
+{
+    return (queue->size == 5);
+}
+
+void enqueue(struct Queue *queue, struct process processes)
+{
+    if (!isQueueFull(queue))
+    {
+        queue->rear = (queue->rear + 1) % MAX_QUEUE_SIZE;
+        queue->items[queue->rear] = processes;
+        queue->size++;
+    }
+    else
+    {
+        printf("Queue is full. Cannot enqueue.\n");
+    }
+}
+
+// Dequeue a process from the queue
+struct process dequeue(struct Queue *queue)
+{
+    struct process emptyProcess; // You may want to use a specific error value
+    if (!isQueueEmpty(queue))
+    {
+        struct process processes = queue->items[queue->front];
+        queue->front = (queue->front + 1) % MAX_QUEUE_SIZE;
+        queue->size--;
+        return processes;
+    }
+    else
+    {
+        printf("Queue is empty. Cannot dequeue.\n");
+        return emptyProcess;
+    }
+}
+
+void roundRobin(void)
+{
+    putchar('\n');
+    struct process readyq[process_size];
+    for (int i = 0; i < process_size; i++)
+    {
+        strcpy(readyq[i].name, container[i].name);
+        readyq[i].priority = container[i].priority;
+        readyq[i].CPU_Burst = container[i].CPU_Burst;
+        readyq[i].arrive_time = container[i].arrive_time;
+        readyq[i].n = container[i].n;
+        readyq[i].currently_inuse = container[i].currently_inuse;
+    }
+    // sort base on arrive time. (bubble sort)
+    for (int i = 0; i < process_size - 1; i++)
+    {
+        for (int j = 0; j < process_size - i - 1; j++)
+        {
+            if (readyq[j].arrive_time > readyq[j + 1].arrive_time)
+            {
+                struct process temp = readyq[j];
+                readyq[j] = readyq[j + 1];
+                readyq[j + 1] = temp;
+            }
+        }
+    }
+
+    struct Queue processqueue;
+    initializeQueue(&processqueue);
+    int timequa = 4;
+    max_time = 0;
+    int index = 0;
+    enqueue(&processqueue, readyq[0]);
+    int processesRemaining = process_size;
+
+    while (processesRemaining > 0)
+    {
+        struct process currentProcess = dequeue(&processqueue);
+
+        if (currentProcess.CPU_Burst <= timequa)
+        {
+            max_time += currentProcess.CPU_Burst;
+            currentProcess.CPU_Burst = 0;
+            processesRemaining--;
+        }
+        else
+        {
+            max_time += timequa;
+            currentProcess.CPU_Burst -= timequa;
+        }
+
+        printf("Now the Process that is implemented is %s\n", currentProcess.name);
+        clocktimer();
+
+        while (index < process_size && readyq[index].arrive_time <= max_time)
+        {
+            enqueue(&processqueue, readyq[index]);
+            index++;
+        }
+
+        if (currentProcess.CPU_Burst > 0)
+        {
+            enqueue(&processqueue, currentProcess);
+        }
+    }
+    printf("The time is now at: %d\n", max_time);
 }
