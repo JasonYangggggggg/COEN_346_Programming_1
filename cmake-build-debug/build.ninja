@@ -49,29 +49,35 @@ cmake_ninja_workdir = /Users/evegagnon/Documents/Fall_2023/COEN346/Assignments/P
 
 build cmake_object_order_depends_target_A1: phony || CMakeFiles/A1.dir
 
-build CMakeFiles/A1.dir/main.c.o: C_COMPILER__A1_unscanned_Debug /Users/evegagnon/Documents/Fall_2023/COEN346/Assignments/Programming/A1/COEN_346_Programming_1/main.c || cmake_object_order_depends_target_A1
-  DEP_FILE = CMakeFiles/A1.dir/main.c.o.d
+build CMakeFiles/A1.dir/src/main.c.o: C_COMPILER__A1_unscanned_Debug /Users/evegagnon/Documents/Fall_2023/COEN346/Assignments/Programming/A1/COEN_346_Programming_1/src/main.c || cmake_object_order_depends_target_A1
+  DEP_FILE = CMakeFiles/A1.dir/src/main.c.o.d
   FLAGS = -g -std=gnu11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/A1.dir
-  OBJECT_FILE_DIR = CMakeFiles/A1.dir
+  OBJECT_FILE_DIR = CMakeFiles/A1.dir/src
 
-build CMakeFiles/A1.dir/pid_manager.c.o: C_COMPILER__A1_unscanned_Debug /Users/evegagnon/Documents/Fall_2023/COEN346/Assignments/Programming/A1/COEN_346_Programming_1/pid_manager.c || cmake_object_order_depends_target_A1
-  DEP_FILE = CMakeFiles/A1.dir/pid_manager.c.o.d
+build CMakeFiles/A1.dir/src/Pid_Manager.c.o: C_COMPILER__A1_unscanned_Debug /Users/evegagnon/Documents/Fall_2023/COEN346/Assignments/Programming/A1/COEN_346_Programming_1/src/Pid_Manager.c || cmake_object_order_depends_target_A1
+  DEP_FILE = CMakeFiles/A1.dir/src/Pid_Manager.c.o.d
   FLAGS = -g -std=gnu11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/A1.dir
-  OBJECT_FILE_DIR = CMakeFiles/A1.dir
+  OBJECT_FILE_DIR = CMakeFiles/A1.dir/src
 
-build CMakeFiles/A1.dir/scheduler.c.o: C_COMPILER__A1_unscanned_Debug /Users/evegagnon/Documents/Fall_2023/COEN346/Assignments/Programming/A1/COEN_346_Programming_1/scheduler.c || cmake_object_order_depends_target_A1
-  DEP_FILE = CMakeFiles/A1.dir/scheduler.c.o.d
+build CMakeFiles/A1.dir/src/Round_Robin.c.o: C_COMPILER__A1_unscanned_Debug /Users/evegagnon/Documents/Fall_2023/COEN346/Assignments/Programming/A1/COEN_346_Programming_1/src/Round_Robin.c || cmake_object_order_depends_target_A1
+  DEP_FILE = CMakeFiles/A1.dir/src/Round_Robin.c.o.d
   FLAGS = -g -std=gnu11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/A1.dir
-  OBJECT_FILE_DIR = CMakeFiles/A1.dir
+  OBJECT_FILE_DIR = CMakeFiles/A1.dir/src
 
-build CMakeFiles/A1.dir/pcb.c.o: C_COMPILER__A1_unscanned_Debug /Users/evegagnon/Documents/Fall_2023/COEN346/Assignments/Programming/A1/COEN_346_Programming_1/pcb.c || cmake_object_order_depends_target_A1
-  DEP_FILE = CMakeFiles/A1.dir/pcb.c.o.d
+build CMakeFiles/A1.dir/src/Pcb.c.o: C_COMPILER__A1_unscanned_Debug /Users/evegagnon/Documents/Fall_2023/COEN346/Assignments/Programming/A1/COEN_346_Programming_1/src/Pcb.c || cmake_object_order_depends_target_A1
+  DEP_FILE = CMakeFiles/A1.dir/src/Pcb.c.o.d
   FLAGS = -g -std=gnu11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/A1.dir
-  OBJECT_FILE_DIR = CMakeFiles/A1.dir
+  OBJECT_FILE_DIR = CMakeFiles/A1.dir/src
+
+build CMakeFiles/A1.dir/src/ReadyQueue.c.o: C_COMPILER__A1_unscanned_Debug /Users/evegagnon/Documents/Fall_2023/COEN346/Assignments/Programming/A1/COEN_346_Programming_1/src/ReadyQueue.c || cmake_object_order_depends_target_A1
+  DEP_FILE = CMakeFiles/A1.dir/src/ReadyQueue.c.o.d
+  FLAGS = -g -std=gnu11 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/A1.dir
+  OBJECT_FILE_DIR = CMakeFiles/A1.dir/src
 
 
 # =============================================================================
@@ -81,7 +87,7 @@ build CMakeFiles/A1.dir/pcb.c.o: C_COMPILER__A1_unscanned_Debug /Users/evegagnon
 #############################################
 # Link the executable A1
 
-build A1: C_EXECUTABLE_LINKER__A1_Debug CMakeFiles/A1.dir/main.c.o CMakeFiles/A1.dir/pid_manager.c.o CMakeFiles/A1.dir/scheduler.c.o CMakeFiles/A1.dir/pcb.c.o
+build A1: C_EXECUTABLE_LINKER__A1_Debug CMakeFiles/A1.dir/src/main.c.o CMakeFiles/A1.dir/src/Pid_Manager.c.o CMakeFiles/A1.dir/src/Round_Robin.c.o CMakeFiles/A1.dir/src/Pcb.c.o CMakeFiles/A1.dir/src/ReadyQueue.c.o
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk
   OBJECT_DIR = CMakeFiles/A1.dir
   POST_BUILD = :
