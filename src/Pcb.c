@@ -7,7 +7,7 @@
 #include "../include/Pcb.h"
 #include "../include/Pid_Manager.h"
 
-struct Pcb* createPcb(char name, int priority, int burst, int arrival, struct Pcb* children) {
+struct Pcb* createPcb(char *name, int priority, int burst, int arrival, struct Pcb* children) {
     struct Pcb* newPcb = (struct Pcb*) malloc(sizeof(struct Pcb));
 
     if (newPcb == NULL) { // mem alloc errors
@@ -17,7 +17,7 @@ struct Pcb* createPcb(char name, int priority, int burst, int arrival, struct Pc
     printf("%d", newPid);
     // Allocate PID & set PID to PCB
     newPcb->pid = allocate_pid();
-    newPcb->name = &name;
+    newPcb->name = name;
     newPcb->priority = priority;
     newPcb->burst = burst;
     newPcb->arrival = arrival;

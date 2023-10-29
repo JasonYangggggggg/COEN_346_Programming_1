@@ -15,7 +15,7 @@ struct Pcb
     struct Pcb* children;
 } Pcb;
 
-struct Pcb* createPcb(char name, int priority, int burst, int arrival, struct Pcb* children);
+struct Pcb* createPcb(char *name, int priority, int burst, int arrival, struct Pcb* children);
 
 int executePcb(struct Pcb* pcb, int burst);
 

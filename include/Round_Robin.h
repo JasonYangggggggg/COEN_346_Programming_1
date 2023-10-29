@@ -7,6 +7,6 @@
 
 #include "Pcb.h"
 
-struct Pcb executeRR(struct Pcb *p_list, int quantum, int exec_time);
+int executeRR(struct Pcb *p_list, int quantum, int exec_time, int num_pid);
 
 #endif //A1_ROUND_ROBIN_H

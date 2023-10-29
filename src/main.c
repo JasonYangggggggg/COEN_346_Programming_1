@@ -153,8 +153,8 @@ int main(int argc, char *argv[])
     allocate_map();
 
     // Select algorithm
-    if (strcmp(algorithm, "rr")) {
-        executeRR(*p_list, quantum, exec_time);
+    if (strcmp(algorithm, "rr") != 0) {
+        executeRR(p_list, quantum, exec_time, num_pid);
     }
 
     return 0;
