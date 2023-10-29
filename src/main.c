@@ -9,6 +9,7 @@
 #include "../include/Pid_Manager.h"
 #include "../include/Queue.h"
 #include "../include/Round_Robin.h"
+#include "../include/Prio_RR.h"
 
 #define MIN_PID 300
 #define MAX_PID 5000
@@ -110,7 +111,7 @@ int read_file(void)
                 // get number of children
                 //int n_children = (int)strtol(token, (char **)NULL, 10);
                 p_list[i].children = (int)strtol(token, (char **)NULL, 10);
-//                // alloc for children list
+                // alloc for children list
 //                children_list = malloc(n_children * sizeof(struct Pcb));
 //                // add children to the list
 //                int c_index = 0;
@@ -165,9 +166,14 @@ int main(int argc, char *argv[])
     // Allocate map on program launch
     allocate_map();
 
+    // Print template:
+    printf("Time\t|\tRunning  \t\t|\t\tReady\t\t|\t\tWaiting\n");
+
     // Select algorithm
     if (strcmp(algorithm, "rr") != 0) {
         executeRR(p_list, quantum, exec_time, num_pid);
+    } else if (strcmp(algorithm, "prr") != 0) {
+        executePRR(p_list, quantum, exec_time, num_pid);
     }
 
     return 0;

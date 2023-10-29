@@ -30,5 +30,7 @@ void addToQueue(struct Queue* queue, struct Pcb pcb);
 // Run PID
 struct Pcb runPid(struct Queue* queue);
 
+char *printQueueContent(struct Queue* queue);
+
 
 #endif //A1_QUEUE_H

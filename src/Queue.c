@@ -3,6 +3,7 @@
 //
 
 #include <printf.h>
+#include <string.h>
 #include "../include/Queue.h"
 
 // Initialize ready queue
@@ -66,4 +67,37 @@ struct Pcb runPid(struct Queue* queue)
     free(node);
 
     return data;
+}
+
+// Print all items in the queue
+char *printQueueContent(struct Queue* queue) {
+    struct Node* current = queue->front;
+
+    char* names = NULL;
+    size_t totalLength = 0;
+
+    while (current != NULL) {
+        size_t nameLength = strlen(current->data.name);
+        names = realloc(names, totalLength + nameLength + 2); // +2 for separator and null terminator
+        if (names == NULL) {
+            perror("Memory allocation error");
+            exit(EXIT_FAILURE);
+        }
+
+        if (totalLength > 0) {
+            strcat(names, ", ");
+            totalLength += 2;
+        }
+        strcat(names, current->data.name);
+        totalLength += nameLength;
+
+        current = current->next;
+    }
+
+    if (names == NULL) {
+        names = "";
+    }
+
+
+    return names;
 }
