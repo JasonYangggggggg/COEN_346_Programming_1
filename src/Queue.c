@@ -3,12 +3,12 @@
 //
 
 #include <printf.h>
-#include "../include/ReadyQueue.h"
+#include "../include/Queue.h"
 
 // Initialize ready queue
-struct ReadyQueue* initQueue()
+struct Queue* initQueue()
 {
-    struct ReadyQueue* queue = (struct ReadyQueue*)malloc(sizeof(struct ReadyQueue));
+    struct Queue* queue = (struct Queue*)malloc(sizeof(struct Queue));
     if (queue == NULL) {
         // Handle memory allocation error
         printf("ERROR");
@@ -20,7 +20,7 @@ struct ReadyQueue* initQueue()
 }
 
 // Add node to linked list
-void addToQueue(struct ReadyQueue* queue, struct Pcb data) {
+void addToQueue(struct Queue* queue, struct Pcb data) {
 
     // Create node
     struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
@@ -43,7 +43,7 @@ void addToQueue(struct ReadyQueue* queue, struct Pcb data) {
 }
 
 // Pop and return node
-struct Pcb runPid(struct ReadyQueue* queue)
+struct Pcb runPid(struct Queue* queue)
 {
     // if Queue is empty, return pid.
     struct Pcb emptyPcb;

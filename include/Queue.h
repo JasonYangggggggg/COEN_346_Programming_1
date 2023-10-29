@@ -2,8 +2,8 @@
 // Created by Eve Gagnon on 2023-10-27.
 //
 
-#ifndef A1_READYQUEUE_H
-#define A1_READYQUEUE_H
+#ifndef A1_QUEUE_H
+#define A1_QUEUE_H
 #include "Pcb.h"
 #include <stddef.h>
 #include <stdlib.h>
@@ -13,22 +13,22 @@ typedef struct Node {
     struct Pcb data;
 } Node;
 
-struct ReadyQueue
+struct Queue
 {
     struct Node* front;
     struct Node* rear;
 } ReadyQueue;
 
-struct ReadyQueue* initQueue();
+struct Queue* initQueue();
 
 // Create node
 struct Node* createNode(struct Pcb data);
 
 // Add node to linked list
-void addToQueue(struct ReadyQueue* queue, struct Pcb pcb);
+void addToQueue(struct Queue* queue, struct Pcb pcb);
 
 // Run PID
-struct Pcb runPid(struct ReadyQueue* queue);
+struct Pcb runPid(struct Queue* queue);
 
 
-#endif //A1_READYQUEUE_H
+#endif //A1_QUEUE_H

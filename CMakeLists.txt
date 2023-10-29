@@ -11,5 +11,9 @@ add_executable(A1 src/main.c
         src/Round_Robin.c
         include/Pcb.h
         src/Pcb.c
-        include/ReadyQueue.h
-        src/ReadyQueue.c)
+        include/Queue.h
+        src/Queue.c
+        src/Fcfs.c
+        include/Fcfs.h
+        src/Prio_RR.c
+        include/Prio_RR.h)

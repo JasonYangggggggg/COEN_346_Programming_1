@@ -7,7 +7,7 @@
 #include <time.h>
 #include "../include/Pcb.h"
 #include "../include/Pid_Manager.h"
-#include "../include/ReadyQueue.h"
+#include "../include/Queue.h"
 #include "../include/Round_Robin.h"
 
 #define MIN_PID 300
@@ -66,73 +66,86 @@ int read_file(void)
     if (file != stdin) {
         fclose(file);
     }
-    int index = 0;
+
     p_list = malloc(line_count * sizeof(struct Pcb));
     // Map lines to struct process
-    for (int i = 0; i < line_count; i++)
+    for (int i = 0; i < 5; i++)
     {
-        char *token = strtok(lines[i], ",");
+        int index = 0;
+        char *token = strtok(lines[i], ", ");
         while (token != NULL)
         {
             // this is where you can store each of these tokens in a line to the design parameters
-            printf("Token: %s\n", token);
             if (index == 0)
             {
-                p_list[i].name = &token[0];
+                printf("Name: %s\n", token);
+                // Allocate memory for the name field in the p_list structure
+                p_list[i].name = malloc(strlen(token) + 1);
+                if (p_list[i].name) {
+                    strcpy(p_list[i].name, token);
+                }
             }
             else if (index == 1)
             {
+                printf("Prio: %s\n", token);
                 p_list[i].priority = (int)strtol(token, (char **)NULL, 10);
             }
             else if (index == 2)
             {
+                printf("Burst: %s\n", token);
                 p_list[i].burst = (int)strtol(token, (char **)NULL, 10);
                 // add burst to exec_time
+                printf("Exec before add: %d\n", exec_time);
                 exec_time = exec_time + (int)strtol(token, (char **)NULL, 10);
+                printf("Exec after add: %d\n", exec_time);
             }
             else if (index == 3)
             {
+                printf("Arrival: %s\n", token);
                 p_list[i].arrival = (int)strtol(token, (char **)NULL, 10);
             }
             else if (index == 4)
             {
+                printf("n Children: %s\n", token);
                 // get number of children
-                int n_children = (int)strtol(token, (char **)NULL, 10);
-                // alloc for children list
-                children_list = malloc(n_children * sizeof(struct Pcb));
-                // add children to the list
-                int c_index = 0;
-                for (int j = 0; j < n_children; j++) {
-                    i++;
-                    char *c_token = strtok(lines[i], ",");
-                    while (c_token != NULL) {
-                        if (c_index == 0) {
-                            children_list[i].name = &c_token[0];
-                        } else if (c_index == 1) {
-                            children_list[i].priority = (int)strtol(c_token, (char **)NULL, 10);
-                        } else if (c_index == 2) {
-                            children_list[i].burst = (int)strtol(c_token, (char **)NULL, 10);
-                            // add burst to exec_time
-                            exec_time = exec_time + (int)strtol(c_token, (char **)NULL, 10);
-                        } else if (c_index == 3) {
-                            children_list[i].arrival = (int)strtol(c_token, (char **)NULL, 10);
-                        }
-                        // get next token
-                        c_token = strtok(NULL, ",");
-                        c_index++;
-                    }
-                    c_index = 0;
-                }
-                p_list[i].children = malloc(n_children * sizeof(struct Pcb));
-                p_list[i].children = children_list;
+                //int n_children = (int)strtol(token, (char **)NULL, 10);
+                p_list[i].children = (int)strtol(token, (char **)NULL, 10);
+//                // alloc for children list
+//                children_list = malloc(n_children * sizeof(struct Pcb));
+//                // add children to the list
+//                int c_index = 0;
+//                for (int j = 0; j < n_children; j++) {
+//                    i++;
+//                    char *c_token = strtok(lines[i], ",");
+//                    while (c_token != NULL) {
+//                        if (c_index == 0) {
+//                            children_list[i].name = &c_token[0];
+//                        } else if (c_index == 1) {
+//                            children_list[i].priority = (int)strtol(c_token, (char **)NULL, 10);
+//                        } else if (c_index == 2) {
+//                            children_list[i].burst = (int)strtol(c_token, (char **)NULL, 10);
+//                            // add burst to exec_time
+//                            exec_time = exec_time + (int)strtol(c_token, (char **)NULL, 10);
+//                        } else if (c_index == 3) {
+//                            children_list[i].arrival = (int)strtol(c_token, (char **)NULL, 10);
+//                        }
+//                        // get next token
+//                        c_token = strtok(NULL, ",");
+//                        c_index++;
+//                    }
+//                    c_index = 0;
+//                }
+//                p_list[i].children = malloc(n_children * sizeof(struct Pcb));
+//                p_list[i].children = children_list;
             }
+
 
             // get next token
             token = strtok(NULL, ",");
             index++;
         }
-        printf("**********************");
-        putchar('\n');
+        printf("Process %s has priority %d, cpu burst %d, arrival time %d and %d children.\n", p_list[i].name, p_list[i].priority, p_list[i].burst, p_list[i].arrival, p_list[i].children);
+        printf("**********************\n");
     }
 
     // Compare algorithms and select chosen one
