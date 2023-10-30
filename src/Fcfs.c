@@ -8,9 +8,21 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
     // initalize Queue
     struct Queue *readyQueue = initQueue();
     int current_time = 0;
+   //before you enter the algorithm, you need to sort the list base on the arrive time
+   //simple bubble sort
+   for(int i = 0; i < num_pid - 1; i++){
+       for(int j = 0; j < num_pid -i - 1; j++){
+       
+            if(p_list[j].arrival > p_list[j+1].arrival){
+                    struct Pcb temp = p_list[j];
+                    p_list[j] = p_list[j+1];
+                    p_list[j+1] = temp;
+
+             }
+       }
+    }
 
     printf("Time\tReady\tRunning\tWaiting\n");
-    printf("===================================\n");
 
     for (int i = 0; i < num_pid; i++)
     {
@@ -23,7 +35,7 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
         struct Pcb current_process = runPid(readyQueue);
         printf("%d\t", current_time);
         printf("%s\t-  \t-  \n", current_process.name);
-        current_time += current_process.burst;
+        current_time = current_time + current_process.burst;
         printf("%d\t-  \t-  \t-  \n", current_time);
     }
     return 1;
