@@ -109,35 +109,7 @@ int read_file(void)
             {
                 printf("n Children: %s\n", token);
                 // get number of children
-                //int n_children = (int)strtol(token, (char **)NULL, 10);
                 p_list[i].children = (int)strtol(token, (char **)NULL, 10);
-                // alloc for children list
-//                children_list = malloc(n_children * sizeof(struct Pcb));
-//                // add children to the list
-//                int c_index = 0;
-//                for (int j = 0; j < n_children; j++) {
-//                    i++;
-//                    char *c_token = strtok(lines[i], ",");
-//                    while (c_token != NULL) {
-//                        if (c_index == 0) {
-//                            children_list[i].name = &c_token[0];
-//                        } else if (c_index == 1) {
-//                            children_list[i].priority = (int)strtol(c_token, (char **)NULL, 10);
-//                        } else if (c_index == 2) {
-//                            children_list[i].burst = (int)strtol(c_token, (char **)NULL, 10);
-//                            // add burst to exec_time
-//                            exec_time = exec_time + (int)strtol(c_token, (char **)NULL, 10);
-//                        } else if (c_index == 3) {
-//                            children_list[i].arrival = (int)strtol(c_token, (char **)NULL, 10);
-//                        }
-//                        // get next token
-//                        c_token = strtok(NULL, ",");
-//                        c_index++;
-//                    }
-//                    c_index = 0;
-//                }
-//                p_list[i].children = malloc(n_children * sizeof(struct Pcb));
-//                p_list[i].children = children_list;
             }
 
 
