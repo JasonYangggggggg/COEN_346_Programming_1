@@ -279,7 +279,7 @@ void enqueue(struct Queue *queue, struct process processes)
 // Dequeue a process from the queue
 struct process dequeue(struct Queue *queue)
 {
-    struct process emptyProcess; // You may want to use a specific error value
+    struct process emptyProcess; 
     if (!isQueueEmpty(queue))
     {
         struct process processes = queue->items[queue->front];
