@@ -9,6 +9,7 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
     struct Queue *readyQueue = initQueue();
     struct Queue *waitingQueue = initQueue();
     int current_time = 0;
+    int index_p = 0; // this can keep track on the number of processes in the list
    //before you enter the algorithm, you need to sort the list base on the arrive time
    //simple bubble sort
    for(int i = 0; i < num_pid - 1; i++){
@@ -22,17 +23,22 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
              }
        }
     }
+    int total_time = 0;
+    // calculate the total time needed to finish the task
+ 
+   for(int i = 0; i < num_pid; i++){
+     total_time = total_time + p_list[i].burst;
+   }
 
     printf("Time\tReady\tRunning\tWaiting\n");
 
-    for (int i = 0; i < num_pid; i++)
-    {
-        while (p_list[i].arrival <= current_time)
-        {   //add to ready queue when the process time is equal to the current time
-            addToQueue(readyQueue,p_list[i]);
-            i++;
-        }
-        // Move process to ready queue if they arrived
+    while(1){
+        // hanlde ready queue
+       // then increment the index_p if the there are still processes to implement and smaller than the current Time add them to readyQueue
+       while(index_p < num_pid && p_list[index_p].arrival <= current_time){
+             addToQueue(readyQueue, p_list[index_p]);
+             index_p++;
+       }
         struct Node *waiting = waitingQueue -> front;
         while(waiting != NULL){
           if(waiting -> data.arrival <= current_time){
@@ -57,6 +63,7 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
                 waiting = waiting -> next;
           }
         }
+        
         // now if the readyqueue is empty that means no process has arrived then keep increasing the current time
         if(readyQueue -> front == NULL && readyQueue -> rear == NULL){
           current_time++;
@@ -70,6 +77,10 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
         current_time = current_time + current_process.burst;
         printf("%d\t-  \t-  \t-  \n", current_time);
        }
+       if(current_time == total_time){
+       break;
+     }
+     
     }
     return 1;
 }
