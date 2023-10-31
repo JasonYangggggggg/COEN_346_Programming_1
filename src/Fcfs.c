@@ -7,7 +7,6 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
 {
     // initalize Queue
     struct Queue *readyQueue = initQueue();
-    struct Queue *waitingQueue = initQueue();
     int current_time = 0;
     int index_p = 0; // this can keep track on the number of processes in the list
    //before you enter the algorithm, you need to sort the list base on the arrive time
@@ -39,30 +38,6 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
              addToQueue(readyQueue, p_list[index_p]);
              index_p++;
        }
-        struct Node *waiting = waitingQueue -> front;
-        while(waiting != NULL){
-          if(waiting -> data.arrival <= current_time){
-                  // initialize the next node
-                  struct Node *next = waiting -> next;
-                  // and point the next to null
-                  waiting -> next = NULL;
-                  // Then add them to ready queue
-                  addToQueue(readyQueue, waiting -> data);
-                  // then you update the front of the waiting queue
-                 waitingQueue -> front = next;
-                 // handle the end of the list
-                 if(waitingQueue -> rear == waiting){
-                    waitingQueue -> rear = NULL;
-
-                 }
-                 free(waiting);
-                 waiting = next;
-
-             }
-           else{
-                waiting = waiting -> next;
-          }
-        }
         
         // now if the readyqueue is empty that means no process has arrived then keep increasing the current time
         if(readyQueue -> front == NULL && readyQueue -> rear == NULL){
