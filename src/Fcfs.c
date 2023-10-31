@@ -70,7 +70,7 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
           printf("%d\t- \t- \t- \n", current_time);
         }
         else{
-        // if its not empty then you do these
+        // if its not empty then you run the processes in the readyQueue
         struct Pcb current_process = runPid(readyQueue);
         printf("%d\t", current_time);
         printf("%s\t-  \t-  \n", current_process.name);
