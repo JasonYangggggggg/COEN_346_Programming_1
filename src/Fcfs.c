@@ -29,8 +29,6 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
      total_time = total_time + p_list[i].burst;
    }
 
-    printf("Time\tReady\tRunning\tWaiting\n");
-
     while(1){
         // hanlde ready queue
        // then increment the index_p if the there are still processes to implement and smaller than the current Time add them to readyQueue
