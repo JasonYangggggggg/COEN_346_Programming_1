@@ -7,6 +7,7 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
 {
     // initalize Queue
     struct Queue *readyQueue = initQueue();
+    struct Queue *waitingQueue = initQueue();
     int current_time = 0;
    //before you enter the algorithm, you need to sort the list base on the arrive time
    //simple bubble sort
@@ -26,17 +27,49 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
 
     for (int i = 0; i < num_pid; i++)
     {
-        while (p_list[i].arrival > current_time)
-        {
-            printf("%d\t-  \t-  \t-  \n", current_time);
-            current_time++;
+        while (p_list[i].arrival <= current_time)
+        {   //add to ready queue when the process time is equal to the current time
+            addToQueue(readyQueue,p_list[i]);
+            i++;
         }
-        addToQueue(readyQueue, p_list[i]);
+        // Move process to ready queue if they arrived
+        struct Node *waiting = waitingQueue -> front;
+        while(waiting != NULL){
+          if(waiting -> data.arrival <= current_time){
+                  // initialize the next node
+                  struct Node *next = waiting -> next;
+                  // and point the next to null
+                  waiting -> next = NULL;
+                  // Then add them to ready queue
+                  addToQueue(readyQueue, waiting -> data);
+                  // then you update the front of the waiting queue
+                 waitingQueue -> front = next;
+                 // handle the end of the list
+                 if(waitingQueue -> rear == waiting){
+                    waitingQueue -> rear = NULL;
+
+                 }
+                 free(waiting);
+                 waiting = next;
+
+             }
+           else{
+                waiting = waiting -> next;
+          }
+        }
+        // now if the readyqueue is empty that means no process has arrived then keep increasing the current time
+        if(readyQueue -> front == NULL && readyQueue -> rear == NULL){
+          current_time++;
+          printf("%d\t- \t- \t- \n", current_time);
+        }
+        else{
+        // if its not empty then you do these
         struct Pcb current_process = runPid(readyQueue);
         printf("%d\t", current_time);
         printf("%s\t-  \t-  \n", current_process.name);
         current_time = current_time + current_process.burst;
         printf("%d\t-  \t-  \t-  \n", current_time);
+       }
     }
     return 1;
 }
