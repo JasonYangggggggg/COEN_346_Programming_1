@@ -69,9 +69,19 @@ int read_file(void)
     }
 
     p_list = malloc(line_count * sizeof(struct Pcb));
+    struct Pcb* parent = NULL;
+    int n_children = 0;
+    int idx = 0;
     // Map lines to struct process
     for (int i = 0; i < 5; i++)
     {
+        // params
+        char *p_name;
+        int p_priority;
+        int p_burst;
+        int p_arrival;
+        int p_num_children;
+
         int index = 0;
         char *token = strtok(lines[i], ", ");
         while (token != NULL)
@@ -79,46 +89,55 @@ int read_file(void)
             // this is where you can store each of these tokens in a line to the design parameters
             if (index == 0)
             {
-                printf("Name: %s\n", token);
                 // Allocate memory for the name field in the p_list structure
-                p_list[i].name = malloc(strlen(token) + 1);
-                if (p_list[i].name) {
-                    strcpy(p_list[i].name, token);
+                p_name = malloc(strlen(token) + 1);
+                if (p_name) {
+                    strcpy(p_name, token);
                 }
             }
             else if (index == 1)
             {
-                printf("Prio: %s\n", token);
-                p_list[i].priority = (int)strtol(token, (char **)NULL, 10);
+                p_priority = (int)strtol(token, (char **)NULL, 10);
             }
             else if (index == 2)
             {
-                printf("Burst: %s\n", token);
-                p_list[i].burst = (int)strtol(token, (char **)NULL, 10);
+                p_burst = (int)strtol(token, (char **)NULL, 10);
                 // add burst to exec_time
-                printf("Exec before add: %d\n", exec_time);
                 exec_time = exec_time + (int)strtol(token, (char **)NULL, 10);
-                printf("Exec after add: %d\n", exec_time);
             }
             else if (index == 3)
             {
-                printf("Arrival: %s\n", token);
-                p_list[i].arrival = (int)strtol(token, (char **)NULL, 10);
+                p_arrival = (int)strtol(token, (char **)NULL, 10);
             }
             else if (index == 4)
             {
-                printf("n Children: %s\n", token);
                 // get number of children
-                p_list[i].children = (int)strtol(token, (char **)NULL, 10);
+                p_num_children = (int)strtol(token, (char **)NULL, 10);
             }
-
-
             // get next token
             token = strtok(NULL, ",");
             index++;
         }
-        printf("Process %s has priority %d, cpu burst %d, arrival time %d and %d children.\n", p_list[i].name, p_list[i].priority, p_list[i].burst, p_list[i].arrival, p_list[i].children);
-        printf("**********************\n");
+
+        struct Pcb* newReadPcb = readPcb(p_name, p_priority, p_burst, p_arrival, p_num_children);
+
+        // if n_children > 0, decrement
+        if (n_children > 0) {
+            // Find first empty slot
+            printf("idx = %d\n", idx);
+            parent->children[idx] = newReadPcb;
+            n_children--;
+            idx++;
+        } else {
+            printf("added to p_list");
+            p_list[i] = *newReadPcb;
+        }
+
+        if (newReadPcb->num_children > 0) {
+            parent = newReadPcb; // set parent as newReadPcb.
+            n_children = newReadPcb->num_children; // Set number of children expected.
+            idx = 0;
+        }
     }
 
     // Compare algorithms and select chosen one
@@ -142,9 +161,9 @@ int main(int argc, char *argv[])
     printf("Time\t|\tRunning  \t\t|\t\tReady\t\t|\t\tWaiting\n");
 
     // Select algorithm
-    if (strcmp(algorithm, "rr") != 0) {
+    if (strcmp(algorithm, "rr") == 0) {
         executeRR(p_list, quantum, exec_time, num_pid);
-    } else if (strcmp(algorithm, "prr") != 0) {
+    } else if (strcmp(algorithm, "prr") == 0) {
         executePRR(p_list, quantum, exec_time, num_pid);
     }
 

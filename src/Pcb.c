@@ -4,10 +4,49 @@
 
 #include <stdlib.h>
 #include <printf.h>
+#include <string.h>
 #include "../include/Pcb.h"
 #include "../include/Pid_Manager.h"
 
-struct Pcb* createPcb(char *name, int priority, int burst, int arrival, int children) {
+
+struct Pcb* readPcb(char *name, int priority, int burst, int arrival, int num_children) {
+    struct Pcb* newPcb = (struct Pcb*) malloc(sizeof(struct Pcb));
+
+    if (newPcb == NULL) { // mem alloc errors
+        return NULL;
+    }
+
+    newPcb->name = strdup(name);  // Make a copy of the name
+    if (newPcb->name == NULL) {
+        free(newPcb);
+        return NULL; // Memory allocation error
+    }
+
+    newPcb->priority = priority;
+    newPcb->burst = burst;
+    newPcb->arrival = arrival;
+    newPcb->num_children = num_children;
+
+    if (num_children > 0) {
+        newPcb->children = (struct Pcb**)malloc(num_children * sizeof(struct Pcb*));
+        if (newPcb->children == NULL) {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(1);
+        }
+
+        // Initialize child pointers to NULL
+        for (int i = 0; i < num_children; i++) {
+            newPcb->children[i] = NULL;
+        }
+    } else {
+        newPcb->children = NULL;
+    }
+
+    printf("%s has priority %d, cpu burst %d, arrival time %d and %d children.\n", newPcb->name, newPcb->priority, newPcb->burst, newPcb->arrival, newPcb->num_children);
+    return newPcb;
+}
+
+struct Pcb* createPcb(char *name, int priority, int burst, int arrival, int num_children) {
     struct Pcb* newPcb = (struct Pcb*) malloc(sizeof(struct Pcb));
 
     if (newPcb == NULL) { // mem alloc errors
@@ -17,11 +56,32 @@ struct Pcb* createPcb(char *name, int priority, int burst, int arrival, int chil
     printf("PID allocated: %d\n", newPid);
     // Allocate PID & set PID to PCB
     newPcb->pid = newPid;
-    newPcb->name = name;
+
+    newPcb->name = strdup(name);  // Make a copy of the name
+    if (newPcb->name == NULL) {
+        free(newPcb);
+        return NULL; // Memory allocation error
+    }
+
     newPcb->priority = priority;
     newPcb->burst = burst;
     newPcb->arrival = arrival;
-    newPcb->children = children;
+    newPcb->num_children = num_children;
+
+    if (num_children > 0) {
+        newPcb->children = (struct Pcb**)malloc(num_children * sizeof(struct Pcb*));
+        if (newPcb->children == NULL) {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(1);
+        }
+
+        // Initialize child pointers
+        for (int i = 0; i < num_children; i++) {
+            newPcb->children[i] = NULL;
+        }
+    } else {
+        newPcb->children = NULL;
+    }
 
     printf("Process %s [ID=%d] with priority = %d, burst = %d and arrival = %d created.\n", newPcb->name, newPcb->pid, newPcb->priority, newPcb->burst, newPcb->arrival);
     return newPcb;

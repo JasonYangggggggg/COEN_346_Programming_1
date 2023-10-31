@@ -12,10 +12,14 @@ struct Pcb
     int priority;
     int burst;
     int arrival;
-    int children;
+    int num_children;
+    struct Pcb** children;
 } Pcb;
 
-struct Pcb* createPcb(char *name, int priority, int burst, int arrival, int children);
+
+struct Pcb* readPcb(char *name, int priority, int burst, int arrival, int num_children);
+
+struct Pcb* createPcb(char *name, int priority, int burst, int arrival, int num_children);
 
 int executePcb(struct Pcb* pcb, int burst);
 

@@ -32,7 +32,7 @@ int executeRR(struct Pcb *p_list, int quantum, int exec_time, int num_pid){
             for (int i = 0; i < sizeof(n_processes); i++) {
                 if (p_list[i].arrival == currentTime) {
                     struct Pcb newPID = *createPcb(p_list[i].name, p_list[i].priority, p_list[i].burst,
-                                                   p_list[i].arrival, p_list[i].children);
+                                                   p_list[i].arrival, p_list[i].num_children);
                     printf("New process: PID = %d, name = %s, prio = %d, burst = %d, arrival = %d\n", newPID.pid,
                            newPID.name, newPID.priority, newPID.burst, newPID.arrival);
 
@@ -58,18 +58,27 @@ int executeRR(struct Pcb *p_list, int quantum, int exec_time, int num_pid){
             if (currentPcb.pid != -1) {
                 rdyQueueContent = printQueueContent(readyQueue);
                 waitQueueContent = printQueueContent(waitQueue);
-                int burst = executePcb(&currentPcb, quantum);
+
+                int execDuration = quantum; // default duration is quantum
+                // check remaining burst of current pcb
+                if (currentPcb.burst < quantum) {
+                    execDuration = currentPcb.burst;
+                }
+                // check for children during execDuration. If
+                if (currentPcb.num_children > 0) {
+                    for (int i = 0; i < currentPcb.num_children; i++) {
+                        if (currentPcb.children[i] != NULL & currentPcb.children[i]->arrival < nextRuntime) {
+                            addToQueue(readyQueue, p_list[i]);
+
+                        }
+                    }
+                }
+                int burst = executePcb(&currentPcb, execDuration);
                 nextRuntime = nextRuntime + burst;
 
                 previousPcb = currentPcb;
 
-                // check for children in execution of process
-                for (int i = 0; i < n_processes; i++) {
-                    if (p_list[i].arrival < nextRuntime && strstr(currentPcb.name, p_list[i].name)) {
-                        addToQueue(readyQueue, p_list[i]);
-                        // You can remove this process from p_list if needed
-                    }
-                }
+
             }
         }
         printf("%d\t\t%s\t\t%s\t\t%s\n", currentTime, currentPcb.name, rdyQueueContent, waitQueueContent);

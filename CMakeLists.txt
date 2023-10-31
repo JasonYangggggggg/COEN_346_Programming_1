@@ -16,4 +16,6 @@ add_executable(A1 src/main.c
         src/Fcfs.c
         include/Fcfs.h
         src/Prio_RR.c
-        include/Prio_RR.h)
+        include/Prio_RR.h
+        src/Dictionary.c
+        include/Dictionary.h)
