@@ -7,6 +7,7 @@
 #include <string.h>
 #include "../include/Pcb.h"
 #include "../include/Pid_Manager.h"
+#include "../include/Queue.h"
 
 
 struct Pcb* readPcb(char *name, int priority, int burst, int arrival, int num_children) {
@@ -46,7 +47,7 @@ struct Pcb* readPcb(char *name, int priority, int burst, int arrival, int num_ch
     return newPcb;
 }
 
-struct Pcb* createPcb(char *name, int priority, int burst, int arrival, int num_children) {
+struct Pcb* createPcb(char *name, char *parent, int priority, int burst, int arrival, int num_children) {
     struct Pcb* newPcb = (struct Pcb*) malloc(sizeof(struct Pcb));
 
     if (newPcb == NULL) { // mem alloc errors
@@ -62,6 +63,18 @@ struct Pcb* createPcb(char *name, int priority, int burst, int arrival, int num_
         free(newPcb);
         return NULL; // Memory allocation error
     }
+
+    if (parent != NULL) {
+        newPcb->parent = strdup(parent); // Make a copy of the parent name
+        if (newPcb->parent == NULL) {
+            free(newPcb->name);
+            free(newPcb);
+            return NULL; // Memory allocation error
+        }
+    } else {
+        newPcb->parent = NULL; // Set parent to NULL
+    }
+
 
     newPcb->priority = priority;
     newPcb->burst = burst;
@@ -82,6 +95,7 @@ struct Pcb* createPcb(char *name, int priority, int burst, int arrival, int num_
     } else {
         newPcb->children = NULL;
     }
+    newPcb->children_done = num_children;
 
     printf("Process %s [ID=%d] with priority = %d, burst = %d and arrival = %d created.\n", newPcb->name, newPcb->pid, newPcb->priority, newPcb->burst, newPcb->arrival);
     return newPcb;
@@ -103,4 +117,7 @@ int executePcb(struct Pcb* pcb, int burst) {
         return burst; // return time it'll take to complete exec
     }
 }
+
+
+
 

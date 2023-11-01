@@ -8,18 +8,20 @@
 struct Pcb
 {
     int pid;
+    char *parent;
     char *name;
     int priority;
     int burst;
     int arrival;
     int num_children;
     struct Pcb** children;
+    int children_done;
 } Pcb;
 
 
 struct Pcb* readPcb(char *name, int priority, int burst, int arrival, int num_children);
 
-struct Pcb* createPcb(char *name, int priority, int burst, int arrival, int num_children);
+struct Pcb* createPcb(char *name, char *parent, int priority, int burst, int arrival, int num_children);
 
 int executePcb(struct Pcb* pcb, int burst);
 

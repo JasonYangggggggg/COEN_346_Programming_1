@@ -6,6 +6,9 @@
 #define A1_ROUND_ROBIN_H
 
 #include "Pcb.h"
+#include "Queue.h"
+
+
 
 int executeRR(struct Pcb *p_list, int quantum, int exec_time, int num_pid);
 

@@ -24,13 +24,18 @@ struct Queue* initQueue();
 // Create node
 struct Node* createNode(struct Pcb data);
 
+int isQueueEmpty(struct Queue* queue);
+
 // Add node to linked list
 void addToQueue(struct Queue* queue, struct Pcb pcb);
 
 // Run PID
-struct Pcb runPid(struct Queue* queue);
+struct Pcb returnPid(struct Queue* queue);
 
 char *printQueueContent(struct Queue* queue);
 
+int checkWaitingQueue(struct Queue* waitQueue, struct Queue* readyQueues[5]);
+
+int decreaseNumChildren(struct Queue* queue, char* parentName);
 
 #endif //A1_QUEUE_H

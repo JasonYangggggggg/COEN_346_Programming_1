@@ -6,6 +6,8 @@
 #define A1_PRIO_RR_H
 
 #include "Pcb.h"
+#include "Queue.h"
+
 
 int executePRR(struct Pcb *p_list, int quantum, int exec_time, int num_pid);
 

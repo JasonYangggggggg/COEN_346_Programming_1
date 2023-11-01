@@ -10,6 +10,7 @@
 #include "../include/Queue.h"
 #include "../include/Round_Robin.h"
 #include "../include/Prio_RR.h"
+#include "../include/Fcfs.h"
 
 #define MIN_PID 300
 #define MAX_PID 5000
@@ -71,6 +72,7 @@ int read_file(void)
     p_list = malloc(line_count * sizeof(struct Pcb));
     struct Pcb* parent = NULL;
     int n_children = 0;
+    int num_parents = 0;
     int idx = 0;
     // Map lines to struct process
     for (int i = 0; i < 5; i++)
@@ -134,6 +136,7 @@ int read_file(void)
         }
 
         if (newReadPcb->num_children > 0) {
+            num_parents++;
             parent = newReadPcb; // set parent as newReadPcb.
             n_children = newReadPcb->num_children; // Set number of children expected.
             idx = 0;
@@ -142,7 +145,7 @@ int read_file(void)
 
     // Compare algorithms and select chosen one
     printf("exec time: %d\n", exec_time);
-    return (int) line_count;
+    return line_count;
 }
 
 int main(int argc, char *argv[])
@@ -154,17 +157,31 @@ int main(int argc, char *argv[])
     // Read input file & get exec time
     int num_pid = read_file();
 
+    // Reallocate p_list
+    struct Pcb* new_p_list = malloc(num_pid * sizeof(struct Pcb));
+    int num_parents = 0;
+
+    for (int i = 0; i < num_pid; i++) {
+        if (p_list[i].name != NULL) {
+            new_p_list[num_parents] = p_list[i];
+            num_parents++;
+        }
+    }
+
+    // Adjust the size of the new_p_list
+    new_p_list = realloc(new_p_list, num_parents * sizeof(struct Pcb));
+    free(p_list);
+
     // Allocate map on program launch
     allocate_map();
 
-    // Print template:
-    printf("Time\t|\tRunning  \t\t|\t\tReady\t\t|\t\tWaiting\n");
-
     // Select algorithm
     if (strcmp(algorithm, "rr") == 0) {
-        executeRR(p_list, quantum, exec_time, num_pid);
+        executeRR(new_p_list, quantum, exec_time, num_parents);
     } else if (strcmp(algorithm, "prr") == 0) {
-        executePRR(p_list, quantum, exec_time, num_pid);
+        executePRR(new_p_list, quantum, exec_time, num_parents);
+    } else if (strcmp(algorithm, "fcfs") == 0) {
+        executeFCFS(new_p_list, exec_time, num_parents);
     }
 
     return 0;
