@@ -23,6 +23,8 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
        }
     }
     int total_time = 0;
+    int wait_time = 0;
+    int turnaround_time = 0;
     // calculate the total time needed to finish the task
  
    for(int i = 0; i < num_pid; i++){
@@ -49,11 +51,17 @@ int executeFCFS(struct Pcb *p_list, int exec_time, int num_pid)
         printf("%s\t-  \t-  \n", current_process.name);
         current_time = current_time + current_process.burst;
         printf("%d\t-  \t-  \t-  \n", current_time);
+        int target = current_time - current_process.arrival;
+        int target_wait = current_time - current_process.arrival - current_process.burst;
+        turnaround_time = turnaround_time + target;
+        wait_time = wait_time + target_wait;
        }
        if(current_time == total_time){
        break;
      }
      
     }
+    printf("Wait time is: %d\n", wait_time);
+    printf("turnaround time is: %d\n", turnaround_time);
     return 1;
 }
