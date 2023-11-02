@@ -335,14 +335,14 @@ void roundRobin(void)
 
         if (currentProcess.CPU_Burst <= timequa)
         {
-            max_time += currentProcess.CPU_Burst;
+            max_time = max_time + currentProcess.CPU_Burst;
             currentProcess.CPU_Burst = 0;
             processesRemaining--;
         }
         else
         {
-            max_time += timequa;
-            currentProcess.CPU_Burst -= timequa;
+            max_time = max_time + timequa;
+            currentProcess.CPU_Burst = currentProcess.CPU_Burst - timequa;
         }
 
         printf("Now the Process that is implemented is %s\n", currentProcess.name);
